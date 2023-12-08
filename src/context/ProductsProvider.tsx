@@ -11,7 +11,9 @@ export type UseProductsContextType = ProductsFetchType;
 const initContextState: UseProductsContextType = {
 	products: initProductsState,
 };
-const ProductsContext = createContext<UseProductsContextType>(initContextState);
+
+export const ProductsContext =
+	createContext<UseProductsContextType>(initContextState);
 
 export const ProductsProvider = ({
 	children,

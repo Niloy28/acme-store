@@ -35,14 +35,14 @@ const cartReducer = (
 				);
 			}
 
-			const { id, name, price } = action.payload;
+			const { id, title, price } = action.payload;
 			const filteredCart = state.cart.filter((item) => item.id !== id);
 			const existingItem = state.cart.find((item) => item.id === id);
 			const itemQuantity = existingItem ? existingItem.quantity + 1 : 1;
 
 			return {
 				...state,
-				cart: [...filteredCart, { id, name, price, quantity: itemQuantity }],
+				cart: [...filteredCart, { id, title, price, quantity: itemQuantity }],
 			};
 		}
 		case CART_REDUCER_ACTION_TYPE.REMOVE: {
@@ -121,7 +121,7 @@ const useCartContext = (initState: CartStateType) => {
 	return { dispatch, CART_REDUCER_ACTIONS, totalNumber, totalPrice, cart };
 };
 
-type UseCartContextType = ReturnType<typeof useCartContext>;
+export type UseCartContextType = ReturnType<typeof useCartContext>;
 
 const initCartContextState: UseCartContextType = {
 	dispatch: () => {},
