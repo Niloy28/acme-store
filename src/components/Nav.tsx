@@ -1,5 +1,3 @@
-import React from "react";
-
 type PropTypes = {
 	viewCart: boolean;
 	setViewCart: React.Dispatch<React.SetStateAction<boolean>>;
