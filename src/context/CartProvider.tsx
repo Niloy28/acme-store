@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useMemo, useReducer } from "react";
 import { CartItemType } from "../types/CartItemType";
+import { convertPriceToIntl } from "../utils/StringHelper";
 
 type CartStateType = {
 	cart: CartItemType[];
@@ -10,9 +11,11 @@ const initCartState: CartStateType = { cart: [] };
 // Cart reducer dispatch action types
 const CART_REDUCER_ACTION_TYPE = {
 	ADD: "ADD",
+	QUANTITY: "QUANTITY",
 	REMOVE: "REMOVE",
 	CLEAR: "CLEAR",
 	CLEAR_ALL: "CLEAR_ALL",
+	SUBMIT: "SUBMIT",
 };
 
 export type CartReducerActionType = typeof CART_REDUCER_ACTION_TYPE;
@@ -43,6 +46,29 @@ const cartReducer = (
 			return {
 				...state,
 				cart: [...filteredCart, { id, title, price, quantity: itemQuantity }],
+			};
+		}
+		case CART_REDUCER_ACTION_TYPE.QUANTITY: {
+			if (!action.payload) {
+				throw new Error(
+					"Cart reducer action payload is undefined in QUANTITY action"
+				);
+			}
+
+			const { id, quantity } = action.payload;
+
+			const existingItem = state.cart.find((item) => item.id === id);
+
+			if (!existingItem) {
+				throw new Error("Item does not exist in cart in QUANTITY action");
+			}
+
+			const filteredCart = state.cart.filter((item) => item.id !== id);
+			const updatedItem = { ...existingItem, quantity };
+
+			return {
+				...state,
+				cart: [...filteredCart, updatedItem],
 			};
 		}
 		case CART_REDUCER_ACTION_TYPE.REMOVE: {
@@ -86,6 +112,12 @@ const cartReducer = (
 				cart: [],
 			};
 		}
+		case CART_REDUCER_ACTION_TYPE.SUBMIT: {
+			return {
+				...state,
+				cart: [],
+			};
+		}
 		default: {
 			throw new Error("Undefined action type.");
 		}
@@ -101,10 +133,7 @@ const useCartContext = (initState: CartStateType) => {
 	}, []);
 
 	// Display total price in USD
-	const totalPrice = Intl.NumberFormat("en-US", {
-		style: "currency",
-		currency: "USD",
-	}).format(
+	const totalPrice = convertPriceToIntl(
 		cartState.cart.reduce((previousValue, cartItem) => {
 			return previousValue + cartItem.price * cartItem.quantity;
 		}, 0)
