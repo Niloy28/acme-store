@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, memo } from "react";
 import {
 	CartReducerAction,
 	CartReducerActionType,
@@ -44,4 +44,18 @@ const Product = ({
 	);
 };
 
-export default Product;
+const areProductsEqual = (
+	{ product: prevProduct, inCart: prevInCart }: PropTypes,
+	{ product: nextProduct, inCart: nextInCart }: PropTypes
+) => {
+	return (
+		Object.keys(prevProduct).every((key) => {
+			prevProduct[key as keyof ProductType] ===
+				nextProduct[key as keyof ProductType];
+		}) && prevInCart === nextInCart
+	);
+};
+
+const MemoizedProduct = memo(Product, areProductsEqual);
+
+export default MemoizedProduct;

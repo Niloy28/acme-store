@@ -3,6 +3,7 @@ import { CartReducerAction } from "../context/CartProvider";
 import { CartReducerActionType } from "../context/CartProvider";
 import useProducts from "../hooks/useProducts";
 import { convertPriceToIntl } from "../utils/StringHelper";
+import { memo } from "react";
 
 type PropTypes = {
 	cartItem: CartItemType;
@@ -87,4 +88,15 @@ const CartItem = ({ cartItem, dispatch, REDUCER_ACTIONS }: PropTypes) => {
 	);
 };
 
-export default CartItem;
+const areCartItemsEqual = (
+	{ cartItem: prevItem }: PropTypes,
+	{ cartItem: nextItem }: PropTypes
+) => {
+	return Object.keys(prevItem).every((key) => {
+		prevItem[key as keyof CartItemType] === nextItem[key as keyof CartItemType];
+	});
+};
+
+const MemoizedCartItem = memo(CartItem, areCartItemsEqual);
+
+export default MemoizedCartItem;
